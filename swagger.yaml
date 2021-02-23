@@ -1,0 +1,103 @@
+basePath: /
+consumes:
+- application/json
+definitions:
+  GetByProcessRunDateIdRequest:
+    properties:
+      processrundateid:
+        format: int64
+        type: integer
+        x-go-name: ProcessRunDateID
+      token:
+        type: string
+        x-go-name: Token
+    title: GetByProcessRunDateIdRequest represents body of get_by_process_run_date_id
+      request.
+    type: object
+    x-go-package: github.com/sig7493/bocAPI/api
+  GetByProcessRunDateIdResponse:
+    properties:
+      count:
+        format: int64
+        type: integer
+        x-go-name: Count
+      processrundateid:
+        format: int64
+        type: integer
+        x-go-name: ProcessRunDateID
+    type: object
+    x-go-package: github.com/sig7493/bocAPI/api
+  GetTokenRequest:
+    properties:
+      hostip:
+        type: string
+        x-go-name: HostIP
+      passwd:
+        type: string
+        x-go-name: Passwd
+      userid:
+        type: string
+        x-go-name: UserId
+    title: GetTokenRequest represents body of get_token request.
+    type: object
+    x-go-package: github.com/sig7493/bocAPI/api
+  GetTokenResponse:
+    properties:
+      token:
+        type: string
+        x-go-name: Token
+    type: object
+    x-go-package: github.com/sig7493/bocAPI/api
+host: localhost:3002
+info:
+  description: Documentation of bocapi API.
+  title: bocapi.
+  version: 1.0.0
+paths:
+  /get_by_process_run_date_id:
+    get:
+      operationId: idofget_by_process_run_date_idEndpoint
+      parameters:
+      - required: true
+        schema:
+          $ref: '#/definitions/GetByProcessRunDateIdRequest'
+        description: |-
+          e.g. {"processrundateid": "20210721", "token" : "jkasdk57893#5^"}.
+        in: body
+        name: Body
+      responses:
+        "200":
+          description: GetByProcessRunDateIdResponse
+          schema:
+            $ref: '#/definitions/GetByProcessRunDateIdResponse'
+      summary: Get count of notes processed by a PROCESS_RUN_DATE_ID.
+      tags:
+      - get_by_process_run_date_id
+  /get_token:
+    get:
+      operationId: idofget_tokenEndpoint
+      parameters:
+      - required: true
+        schema:
+          $ref: '#/definitions/GetTokenRequest'
+        description: |-
+          e.g. {"hostip": "127.0.0.1", "userid" : "gops", "passwd": "password"}.
+        in: body
+        name: Body
+      responses:
+        "200":
+          description: GetTokenResponse
+          schema:
+            $ref: '#/definitions/GetTokenResponse'
+      summary: Get token authorizes user credentials and generates token to access
+        the APIs.
+      tags:
+      - get_token
+produces:
+- application/json
+schemes:
+- http
+securityDefinitions:
+  basic:
+    type: basic
+swagger: "2.0"
