@@ -1,7 +1,51 @@
+swagger: '2.0'
+info:
+  description: Documentation of bocapi API.
+  title: bocapi.
+  version: 1.0.0
+host: localhost:3000
 basePath: /
+schemes:
+  - http
 consumes:
-- application/json
+  - application/json
+produces:
+  - application/json
 definitions:
+  GetBetweenProcessRunDateIds:
+    properties:
+      count:
+        format: int64
+        type: integer
+        x-go-name: Count
+      processrundateid:
+        format: int64
+        type: integer
+        x-go-name: ProcessRunDateID
+    type: object
+    x-go-package: github.com/sig7493/bocAPI/api
+  GetBetweenProcessRunDateIdsRequest:
+    properties:
+      fromprocessrundateid:
+        format: int64
+        type: integer
+        x-go-name: FromProcessRunDateID
+      token:
+        type: string
+        x-go-name: Token
+      toprocessrundateid:
+        format: int64
+        type: integer
+        x-go-name: ToProcessRunDateID
+    title: GetBetweenProcessRunDateIdsRequest represents body of get_between_process_run_date_ids
+      request.
+    type: object
+    x-go-package: github.com/sig7493/bocAPI/api
+  GetBetweenProcessRunDateIdsResponse:
+    items:
+      $ref: '#/definitions/GetBetweenProcessRunDateIds'
+    type: array
+    x-go-package: github.com/sig7493/bocAPI/api
   GetByProcessRunDateIdRequest:
     properties:
       processrundateid:
@@ -48,23 +92,37 @@ definitions:
         x-go-name: Token
     type: object
     x-go-package: github.com/sig7493/bocAPI/api
-host: localhost:3002
-info:
-  description: Documentation of bocapi API.
-  title: bocapi.
-  version: 1.0.0
 paths:
+  /get_between_process_run_date_ids:
+    get:
+      operationId: idofget_between_process_run_date_idsEndpoint
+      parameters:
+      - name: "params"
+        required: true
+        schema:
+          $ref: '#/definitions/GetBetweenProcessRunDateIdsRequest'
+        description: |-
+          {"fromprocessrundateid": 20210721, "toprocessrundateid": 20210723, "token" : "jkasdk57893#5^"}.
+        in: query
+      responses:
+        "200":
+          description: GetBetweenProcessRunDateIdsResponse
+          schema:
+            $ref: '#/definitions/GetBetweenProcessRunDateIdsResponse'
+      summary: Get count of notes processed between two PROCESS_RUN_DATE_IDs.
+      tags:
+      - get_between_process_run_date_ids
   /get_by_process_run_date_id:
     get:
       operationId: idofget_by_process_run_date_idEndpoint
       parameters:
-      - required: true
+      - name: params
+        relocalhost
         schema:
           $ref: '#/definitions/GetByProcessRunDateIdRequest'
         description: |-
-          e.g. {"processrundateid": "20210721", "token" : "jkasdk57893#5^"}.
-        in: body
-        name: Body
+          {"processrundateid": 20210721, "token" : "jkasdk57893#5^"}.
+        in: query
       responses:
         "200":
           description: GetByProcessRunDateIdResponse
@@ -81,7 +139,8 @@ paths:
         schema:
           $ref: '#/definitions/GetTokenRequest'
         description: |-
-          e.g. {"hostip": "127.0.0.1", "userid" : "gops", "passwd": "password"}.
+          {"hostip": "127.0.0.1", "userid" : "gops", "passwd": "password"}.
+          in.body
         in: body
         name: Body
       responses:
@@ -93,11 +152,3 @@ paths:
         the APIs.
       tags:
       - get_token
-produces:
-- application/json
-schemes:
-- http
-securityDefinitions:
-  basic:
-    type: basic
-swagger: "2.0"

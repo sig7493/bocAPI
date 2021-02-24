@@ -43,3 +43,23 @@ type get_by_process_run_date_idParamsWrapper struct {
 	// in.body
 	Body api.GetByProcessRunDateIdRequest
 }
+
+
+// swagger:route GET /get_between_process_run_date_ids get_between_process_run_date_ids idofget_between_process_run_date_idsEndpoint
+// Get count of notes processed between two PROCESS_RUN_DATE_IDs.
+// responses:
+// 200: body:GetBetweenProcessRunDateIdsResponse
+
+// Get count of notes processed between two PROCESS_RUN_DATE_IDs.
+// swagger:response body:GetBetweenProcessRunDateIdsResponse
+type get_between_process_run_date_idsResponseWrapper struct {
+	// in:body
+	Body api.GetBetweenProcessRunDateIdsResponse
+}
+
+// swagger:parameters idofget_between_process_run_date_idsEndpoint
+type get_between_process_run_date_idsParamsWrapper struct {
+	// {"fromprocessrundateid": "20210721", "toprocessrundateid": "20210723", "token" : "jkasdk57893#5^"}.
+	// in.body
+	Body api.GetBetweenProcessRunDateIdsRequest
+}

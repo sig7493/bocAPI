@@ -6,11 +6,12 @@ import (
 	"log"
 	"net/url"
 	"os"
-	"encoding/json"
+	
 	"strings"
 	"time" */
 
-	//i"fmt"
+	"fmt"
+	"encoding/json"
 	"strconv"
 	"net/http"
 	//"github.com/gorilla/mux"
@@ -57,6 +58,23 @@ type GetByProcessRunDateIdResponse struct {
 	Count int `json:"count"`
 }
 
+// GetBetweenProcessRunDateIdsRequest represents body of get_between_process_run_date_ids request.
+type GetBetweenProcessRunDateIdsRequest struct {
+	FromProcessRunDateID int `json:"fromprocessrundateid" query:"fromprocessrundateid"`
+	ToProcessRunDateID int `json:"toprocessrundateid" query:"toprocessrundateid"`
+	Token string `json:"token" query:"token"`
+}
+
+type GetBetweenProcessRunDateIds struct {
+			ProcessRunDateID int `json:"processrundateid"`
+			Count int `json:"count"`
+}
+
+// swagger:model GetBetweenProcessRunDateIdsResponse
+// GetBetweenProcessRunDateIdsResponse represents body of get_between_process_run_date_ids response.
+type GetBetweenProcessRunDateIdsResponse []GetBetweenProcessRunDateIds
+
+
 // GetTokenHandler handles incoming get_token requests
 func GetTokenHandler(ctx echo.Context) error {
 	/* vars := mux.Vars(r)
@@ -86,15 +104,21 @@ func GetByProcessRunDateIdHandler(ctx echo.Context) error {
 	tokenID, ok := vars["token"] */
 
 	req := GetByProcessRunDateIdRequest{}
+	params := ctx.QueryParam("params")
+	fmt.Printf("%v\n", params)
 
 	if err := ctx.Bind(&req); err != nil {
 		return echo.ErrBadRequest
 	}
 
+	json.Unmarshal([]byte(params), &req)
+	fmt.Printf("req = %v\n", req)
+
 	processrundateID := req.ProcessRunDateID
 	token := req.Token
 
-
+	fmt.Printf("token = %v\n", token)
+	
 	//if !ok {
 	if token == "" {	
 		//fmt.Fprintf(w, "Invalid Token. Please generate a token")
@@ -123,3 +147,32 @@ func GetBetweenProcessRunDateIdsHandler(w http.ResponseWriter, r *http.Request) 
 	fmt.Fprintf(w, "Get between %v and %v Process Run Date IDs with token %v", startprocessrundateID, endprocessrundateID, tokenID)
 } */
 
+func GetBetweenProcessRunDateIdsHandler(ctx echo.Context) error {
+	
+	req := GetBetweenProcessRunDateIdsRequest{}
+	params := ctx.QueryParam("params")
+	fmt.Printf("%v\n", params)
+	
+	if err := ctx.Bind(&req); err != nil {
+		//return echo.ErrBadRequest
+		fmt.Printf("%v\n", err)
+	}
+	
+	json.Unmarshal([]byte(params), &req)
+	fmt.Printf("req = %v\n", req)
+
+	fromprocessrundateID := req.FromProcessRunDateID
+	toprocessrundateID := req.ToProcessRunDateID
+	token := req.Token
+
+	fmt.Printf("token = %v\n", token)
+
+	if token == "" {	
+		resp := "Invalid Token. Please generate a token"
+		return ctx.JSON(http.StatusUnauthorized, resp)
+	}
+
+	resp := "From : " + strconv.Itoa(fromprocessrundateID) + " To : " + strconv.Itoa(toprocessrundateID)  +" requested using token ->" + token
+
+	return ctx.JSON(http.StatusOK, resp)
+}
