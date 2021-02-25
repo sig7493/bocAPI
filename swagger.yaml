@@ -93,9 +93,9 @@ definitions:
     type: object
     x-go-package: github.com/sig7493/bocAPI/api
 paths:
-  /get_between_process_run_date_ids:
+  /counts_between_process_run_date_ids:
     get:
-      operationId: idofget_between_process_run_date_idsEndpoint
+      operationId: idofcounts_between_process_run_date_idsEndpoint
       parameters:
       - name: "params"
         required: true
@@ -111,13 +111,13 @@ paths:
             $ref: '#/definitions/GetBetweenProcessRunDateIdsResponse'
       summary: Get count of notes processed between two PROCESS_RUN_DATE_IDs.
       tags:
-      - get_between_process_run_date_ids
-  /get_by_process_run_date_id:
+      - counts_between_process_run_date_ids
+  /count_by_process_run_date_id:
     get:
-      operationId: idofget_by_process_run_date_idEndpoint
+      operationId: idofcount_by_process_run_date_idEndpoint
       parameters:
       - name: params
-        relocalhost
+        required: true
         schema:
           $ref: '#/definitions/GetByProcessRunDateIdRequest'
         description: |-
@@ -130,10 +130,10 @@ paths:
             $ref: '#/definitions/GetByProcessRunDateIdResponse'
       summary: Get count of notes processed by a PROCESS_RUN_DATE_ID.
       tags:
-      - get_by_process_run_date_id
-  /get_token:
+      - count_by_process_run_date_id
+  /generate_token:
     get:
-      operationId: idofget_tokenEndpoint
+      operationId: idofgenerate_tokenEndpoint
       parameters:
       - required: true
         schema:
@@ -148,7 +148,7 @@ paths:
           description: GetTokenResponse
           schema:
             $ref: '#/definitions/GetTokenResponse'
-      summary: Get token authorizes user credentials and generates token to access
+      summary: Generates token authorizes user credentials and generates token to access
         the APIs.
       tags:
-      - get_token
+      - generate_token

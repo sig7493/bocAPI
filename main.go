@@ -45,16 +45,23 @@ func getEnvVariable(key string) string {
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Use(middleware.CORS())
+
+	/* e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:3002", "http://10.175.166.9:3002"},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+	  })) */
 
 	// Set up basic auth with username=foo and password=bar
-	e.Use(middleware.BasicAuthWithConfig(middleware.BasicAuthConfig{
+	/* e.Use(middleware.BasicAuthWithConfig(middleware.BasicAuthConfig{
 		Validator: func(username, password string, c echo.Context) (bool, error) {
 			if username == "gops" && password == "password" {
 				return true, nil
 			}
+			fmt.Printf("error!!!")
 			return false, nil
 		},
-	}))
+	})) */
 
 	/* //Define Routes
 	router := mux.NewRouter().StrictSlash(true)
@@ -65,8 +72,9 @@ func getEnvVariable(key string) string {
 	log.Fatal(http.ListenAndServe(apihost + ":" + apiport, router)) */
 
 	// Route => handler
-	e.GET("/get_token", api.GetTokenHandler)
-	e.GET("/get_by_process_run_date_id", api.GetByProcessRunDateIdHandler)
+	e.GET("/generate_token", api.GetTokenHandler)
+	e.GET("/count_by_process_run_date_id", api.GetByProcessRunDateIdHandler)
+	e.GET("/counts_between_process_run_date_ids", api.GetBetweenProcessRunDateIdsHandler)
 
 	// Start server
 	e.Logger.Fatal(e.Start(apihost + ":" + apiport))
