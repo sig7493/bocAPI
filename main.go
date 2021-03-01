@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 	"log"
-	"fmt"
+	//"fmt"
 	//"net/http"
 	"github.com/joho/godotenv"
 
@@ -33,12 +33,10 @@ func getEnvVariable(key string) string {
 
   func main() {
 
-	eshost := getEnvVariable("ES_HOST")
-	esport := getEnvVariable("ES_PORT")
 	apihost := getEnvVariable("API_HOST")
 	apiport := getEnvVariable("API_PORT")
 
-	fmt.Printf("eshost = %s and esport = %s \n", eshost, esport)
+	//fmt.Printf("eshost = %s and esport = %s \n", eshost, esport)
 
 	// Echo instance
 	e := echo.New()

@@ -12,7 +12,7 @@ import (
 
 	"fmt"
 	"encoding/json"
-	"strconv"
+	//"strconv"
 	"net/http"
 	//"github.com/gorilla/mux"
 	"github.com/labstack/echo"
@@ -128,7 +128,11 @@ func GetByProcessRunDateIdHandler(ctx echo.Context) error {
 
 	//fmt.Fprintf(w, "Get Process Run Date ID: %v with token %v", processrundateID, tokenID)
 
-	resp := strconv.Itoa(processrundateID) + " requested using token ->" + token
+	//resp := strconv.Itoa(processrundateID) + " requested using token ->" + token
+
+	get_es_cluster_info()
+	resp := GetByProcessRunDateId_search_request(processrundateID)
+	
 
 	return ctx.JSON(http.StatusOK, resp)
 }
@@ -172,7 +176,9 @@ func GetBetweenProcessRunDateIdsHandler(ctx echo.Context) error {
 		return ctx.JSON(http.StatusUnauthorized, resp)
 	}
 
-	resp := "From : " + strconv.Itoa(fromprocessrundateID) + " To : " + strconv.Itoa(toprocessrundateID)  +" requested using token ->" + token
+	//resp := "From : " + strconv.Itoa(fromprocessrundateID) + " To : " + strconv.Itoa(toprocessrundateID)  +" requested using token ->" + token
+
+	resp := GetBetweenProcessRunDateIds_search_request(fromprocessrundateID, toprocessrundateID)
 
 	return ctx.JSON(http.StatusOK, resp)
 }
