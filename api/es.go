@@ -13,7 +13,8 @@ import (
 
 	"github.com/joho/godotenv"
 
-    "github.com/elastic/go-elasticsearch/v8"
+	"github.com/elastic/go-elasticsearch/v8"
+	"github.com/elastic/go-elasticsearch/v8/estransport"
 )
 
 var (
@@ -38,6 +39,11 @@ func es_connect() (*elasticsearch.Client, error) {
 	fmt.Printf("%v\n", eshosts)
 	cfg := elasticsearch.Config{
 		Addresses: []string{eshosts},
+		Logger: &estransport.ColorLogger{
+			Output:             os.Stdout,
+			EnableRequestBody:  true,
+			EnableResponseBody: true,
+		},
 	}
 	es, err := elasticsearch.NewClient(cfg)
 

@@ -1,4 +1,4 @@
-swagger: '2.0'
+swagger: "2.0"
 info:
   description: Documentation of bocapi API.
   title: bocapi.
@@ -93,17 +93,30 @@ definitions:
     type: object
     x-go-package: github.com/sig7493/bocAPI/api
 paths:
-  /counts_between_process_run_date_ids:
+  '/counts_between_process_run_date_ids/{token}/{fromprocessrundateid}/{toprocessrundateid}':
     get:
       operationId: idofcounts_between_process_run_date_idsEndpoint
       parameters:
-      - name: "params"
+      - name: "fromprocessrundateid"
         required: true
-        schema:
-          $ref: '#/definitions/GetBetweenProcessRunDateIdsRequest'
+        type: integer
         description: |-
-          {"fromprocessrundateid": 20210721, "toprocessrundateid": 20210723, "token" : "jkasdk57893#5^"}.
-        in: query
+          20210721
+        in: path
+        format: int64
+      - name: "toprocessrundateid"
+        required: true
+        type: integer
+        description: |-
+          20210721
+        in: path
+        format: int64
+      - name: token
+        required: true
+        type: string
+        description: |-
+          jkasdk57893#5^.
+        in: path
       responses:
         "200":
           description: GetBetweenProcessRunDateIdsResponse
@@ -112,17 +125,24 @@ paths:
       summary: Get count of notes processed between two PROCESS_RUN_DATE_IDs.
       tags:
       - counts_between_process_run_date_ids
-  /count_by_process_run_date_id:
+  '/count_by_process_run_date_id/{token}/{processrundateid}':
     get:
       operationId: idofcount_by_process_run_date_idEndpoint
       parameters:
-      - name: params
+      - name: processrundateid
         required: true
-        schema:
-          $ref: '#/definitions/GetByProcessRunDateIdRequest'
+        type: integer
         description: |-
-          {"processrundateid": 20210721, "token" : "jkasdk57893#5^"}.
-        in: query
+          20210721.
+        in: path
+        format: int64
+      - name: token
+        required: true
+        type: string
+        description: |-
+          jkasdk57893#5^.
+        in: path
+          
       responses:
         "200":
           description: GetByProcessRunDateIdResponse
@@ -131,23 +151,38 @@ paths:
       summary: Get count of notes processed by a PROCESS_RUN_DATE_ID.
       tags:
       - count_by_process_run_date_id
-  /generate_token:
+  '/generate_token/{hostip}/{userid}/{passwd}':
     get:
       operationId: idofgenerate_tokenEndpoint
       parameters:
-      - required: true
-        schema:
-          $ref: '#/definitions/GetTokenRequest'
+      - name: hostip
+        in: path
+        required: true
+        type: string
+        description: |-
+          "127.0.0.1".
+      - name: userid
+        in: path
+        required: true
+        type: string
         description: |-
           {"hostip": "127.0.0.1", "userid" : "gops", "passwd": "password"}.
-          in.body
-        in: body
-        name: Body
+      - name: passwd
+        in: path
+        required: true
+        type: string
+        description: |-
+          {"hostip": "127.0.0.1", "userid" : "gops", "passwd": "password"}.
+        
       responses:
         "200":
           description: GetTokenResponse
           schema:
             $ref: '#/definitions/GetTokenResponse'
+        "400":
+          description: Invalid userID.
+        "404":
+          description: Token not generated.
       summary: Generates token authorizes user credentials and generates token to access
         the APIs.
       tags:

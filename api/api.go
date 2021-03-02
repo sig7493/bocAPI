@@ -11,8 +11,8 @@ import (
 	"time" */
 
 	"fmt"
-	"encoding/json"
-	//"strconv"
+	//"encoding/json"
+	"strconv"
 	"net/http"
 	//"github.com/gorilla/mux"
 	"github.com/labstack/echo"
@@ -81,14 +81,19 @@ func GetTokenHandler(ctx echo.Context) error {
 	userid := vars["userid"]
 	password := vars["password"] */
 
-	req := GetTokenRequest{}
+	req := GetTokenRequest{}/*  */
 
 	if err := ctx.Bind(&req); err != nil {
 		return echo.ErrBadRequest
 	}
-    hostip := req.HostIP
+    /* hostip := req.HostIP
 	userid := req.UserId	
-	password := req.Passwd
+	password := req.Passwd */
+
+	
+	hostip := ctx.Param("hostip")
+	userid := ctx.Param("userid")
+	password := ctx.Param("passwd")
 
 	// Perform check 
 
@@ -104,7 +109,8 @@ func GetByProcessRunDateIdHandler(ctx echo.Context) error {
 	tokenID, ok := vars["token"] */
 
 	req := GetByProcessRunDateIdRequest{}
-	params := ctx.QueryParam("params")
+	
+	/* params := ctx.QueryParam("params")
 	fmt.Printf("%v\n", params)
 
 	if err := ctx.Bind(&req); err != nil {
@@ -115,7 +121,19 @@ func GetByProcessRunDateIdHandler(ctx echo.Context) error {
 	fmt.Printf("req = %v\n", req)
 
 	processrundateID := req.ProcessRunDateID
-	token := req.Token
+	token := req.Token */
+
+	processrundateID, err := strconv.Atoi(ctx.Param("processrundateid"))
+	if err != nil {
+		fmt.Printf("%v", err)
+		return ctx.JSON(http.StatusBadRequest, err)
+	}
+
+	token := ctx.Param("token")
+
+	if err := ctx.Bind(&req); err != nil {
+		return echo.ErrBadRequest
+	}
 
 	fmt.Printf("token = %v\n", token)
 	
@@ -154,7 +172,8 @@ func GetBetweenProcessRunDateIdsHandler(w http.ResponseWriter, r *http.Request) 
 func GetBetweenProcessRunDateIdsHandler(ctx echo.Context) error {
 	
 	req := GetBetweenProcessRunDateIdsRequest{}
-	params := ctx.QueryParam("params")
+	
+	/* params := ctx.QueryParam("params")
 	fmt.Printf("%v\n", params)
 	
 	if err := ctx.Bind(&req); err != nil {
@@ -167,7 +186,25 @@ func GetBetweenProcessRunDateIdsHandler(ctx echo.Context) error {
 
 	fromprocessrundateID := req.FromProcessRunDateID
 	toprocessrundateID := req.ToProcessRunDateID
-	token := req.Token
+	token := req.Token */
+
+	fromprocessrundateID, err := strconv.Atoi(ctx.Param("fromprocessrundateid"))
+	if err != nil {
+		fmt.Printf("%v", err)
+		return ctx.JSON(http.StatusBadRequest, err)
+	}
+
+	toprocessrundateID, err := strconv.Atoi(ctx.Param("toprocessrundateid"))
+	if err != nil {
+		fmt.Printf("%v", err)
+		return ctx.JSON(http.StatusBadRequest, err)
+	}
+
+	token := ctx.Param("token")
+
+	if err := ctx.Bind(&req); err != nil {
+		return echo.ErrBadRequest
+	}
 
 	fmt.Printf("token = %v\n", token)
 

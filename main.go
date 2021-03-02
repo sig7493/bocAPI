@@ -70,9 +70,9 @@ func getEnvVariable(key string) string {
 	log.Fatal(http.ListenAndServe(apihost + ":" + apiport, router)) */
 
 	// Route => handler
-	e.GET("/generate_token", api.GetTokenHandler)
-	e.GET("/count_by_process_run_date_id", api.GetByProcessRunDateIdHandler)
-	e.GET("/counts_between_process_run_date_ids", api.GetBetweenProcessRunDateIdsHandler)
+	e.GET("/generate_token/:hostip/:userid/:passwd", api.GetTokenHandler)
+	e.GET("/count_by_process_run_date_id/:token/:processrundateid", api.GetByProcessRunDateIdHandler)
+	e.GET("/counts_between_process_run_date_ids/:token/:fromprocessrundateid/:toprocessrundateid", api.GetBetweenProcessRunDateIdsHandler)
 
 	// Start server
 	e.Logger.Fatal(e.Start(apihost + ":" + apiport))
