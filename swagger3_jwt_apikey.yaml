@@ -1,0 +1,182 @@
+openapi: 3.0.1
+info:
+  title: bocapi.
+  description: Documentation of bocapi API.
+  version: 1.0.0
+servers:
+- url: http://10.175.166.9:3000/
+- url: https://10.175.166.9:3000/
+paths:
+  /api/counts_between_process_run_date_ids/{fromprocessrundateid}/{toprocessrundateid}:
+    get:
+      tags:
+      - counts_between_process_run_date_ids
+      summary: Get count of notes processed between two PROCESS_RUN_DATE_IDs.
+      operationId: idofcounts_between_process_run_date_idsEndpoint
+      parameters:
+      - name: fromprocessrundateid
+        in: path
+        description: "20210721"
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: toprocessrundateid
+        in: path
+        description: "20210721"
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: GetBetweenProcessRunDateIdsResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBetweenProcessRunDateIdsResponse'
+      security:
+      - Bearer: []
+  /api/count_by_process_run_date_id/{processrundateid}:
+    get:
+      tags:
+      - count_by_process_run_date_id
+      summary: Get count of notes processed by a PROCESS_RUN_DATE_ID.
+      operationId: idofcount_by_process_run_date_idEndpoint
+      parameters:
+      - name: processrundateid
+        in: path
+        description: "20210721."
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: GetByProcessRunDateIdResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetByProcessRunDateIdResponse'
+      security:
+      - Bearer: []
+  /generate_token/{hostip}/{userid}/{passwd}:
+    get:
+      tags:
+      - generate_token
+      summary: Generates token authorizes user credentials and generates token to
+        access the APIs.
+      operationId: idofgenerate_tokenEndpoint
+      parameters:
+      - name: hostip
+        in: path
+        description: '"127.0.0.1".'
+        required: true
+        schema:
+          type: string
+      - name: userid
+        in: path
+        description: '{"hostip": "127.0.0.1", "userid" : "gops", "passwd": "password"}.'
+        required: true
+        schema:
+          type: string
+      - name: passwd
+        in: path
+        description: '{"hostip": "127.0.0.1", "userid" : "gops", "passwd": "password"}.'
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: GetTokenResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTokenResponse'
+        400:
+          description: Invalid userID.
+          content: {}
+        404:
+          description: Token not generated.
+          content: {}
+components:
+  schemas:
+    GetBetweenProcessRunDateIds:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int64
+          x-go-name: Count
+        processrundateid:
+          type: integer
+          format: int64
+          x-go-name: ProcessRunDateID
+      x-go-package: github.com/sig7493/bocAPI/api
+    GetBetweenProcessRunDateIdsRequest:
+      title: GetBetweenProcessRunDateIdsRequest represents body of get_between_process_run_date_ids
+        request.
+      type: object
+      properties:
+        fromprocessrundateid:
+          type: integer
+          format: int64
+          x-go-name: FromProcessRunDateID
+        toprocessrundateid:
+          type: integer
+          format: int64
+          x-go-name: ToProcessRunDateID
+      x-go-package: github.com/sig7493/bocAPI/api
+    GetBetweenProcessRunDateIdsResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/GetBetweenProcessRunDateIds'
+      x-go-package: github.com/sig7493/bocAPI/api
+    GetByProcessRunDateIdRequest:
+      title: GetByProcessRunDateIdRequest represents body of get_by_process_run_date_id
+        request.
+      type: object
+      properties:
+        processrundateid:
+          type: integer
+          format: int64
+          x-go-name: ProcessRunDateID
+      x-go-package: github.com/sig7493/bocAPI/api
+    GetByProcessRunDateIdResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int64
+          x-go-name: Count
+        processrundateid:
+          type: integer
+          format: int64
+          x-go-name: ProcessRunDateID
+      x-go-package: github.com/sig7493/bocAPI/api
+    GetTokenRequest:
+      title: GetTokenRequest represents body of get_token request.
+      type: object
+      properties:
+        hostip:
+          type: string
+          x-go-name: HostIP
+        passwd:
+          type: string
+          x-go-name: Passwd
+        userid:
+          type: string
+          x-go-name: UserId
+      x-go-package: github.com/sig7493/bocAPI/api
+    GetTokenResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          x-go-name: Token
+      x-go-package: github.com/sig7493/bocAPI/api
+  securitySchemes:
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

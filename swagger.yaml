@@ -3,10 +3,16 @@ info:
   description: Documentation of bocapi API.
   title: bocapi.
   version: 1.0.0
-host: localhost:3000
+host: 10.175.166.9:3000
 basePath: /
 schemes:
   - http
+  - https
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
 consumes:
   - application/json
 produces:
@@ -30,9 +36,6 @@ definitions:
         format: int64
         type: integer
         x-go-name: FromProcessRunDateID
-      token:
-        type: string
-        x-go-name: Token
       toprocessrundateid:
         format: int64
         type: integer
@@ -52,9 +55,6 @@ definitions:
         format: int64
         type: integer
         x-go-name: ProcessRunDateID
-      token:
-        type: string
-        x-go-name: Token
     title: GetByProcessRunDateIdRequest represents body of get_by_process_run_date_id
       request.
     type: object
@@ -93,9 +93,11 @@ definitions:
     type: object
     x-go-package: github.com/sig7493/bocAPI/api
 paths:
-  '/counts_between_process_run_date_ids/{token}/{fromprocessrundateid}/{toprocessrundateid}':
+  '/api/counts_between_process_run_date_ids/{fromprocessrundateid}/{toprocessrundateid}':
     get:
       operationId: idofcounts_between_process_run_date_idsEndpoint
+      security:
+        - Bearer: []
       parameters:
       - name: "fromprocessrundateid"
         required: true
@@ -111,12 +113,6 @@ paths:
           20210721
         in: path
         format: int64
-      - name: token
-        required: true
-        type: string
-        description: |-
-          jkasdk57893#5^.
-        in: path
       responses:
         "200":
           description: GetBetweenProcessRunDateIdsResponse
@@ -125,9 +121,11 @@ paths:
       summary: Get count of notes processed between two PROCESS_RUN_DATE_IDs.
       tags:
       - counts_between_process_run_date_ids
-  '/count_by_process_run_date_id/{token}/{processrundateid}':
+  '/api/count_by_process_run_date_id/{processrundateid}':
     get:
       operationId: idofcount_by_process_run_date_idEndpoint
+      security:
+        - Bearer: []
       parameters:
       - name: processrundateid
         required: true
@@ -136,13 +134,7 @@ paths:
           20210721.
         in: path
         format: int64
-      - name: token
-        required: true
-        type: string
-        description: |-
-          jkasdk57893#5^.
-        in: path
-          
+                
       responses:
         "200":
           description: GetByProcessRunDateIdResponse

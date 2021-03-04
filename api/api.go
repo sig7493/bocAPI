@@ -5,10 +5,11 @@ import (
 	"context"
 	"log"
 	"net/url"
-	"os"
 	
-	"strings"
-	"time" */
+	
+	"strings" */
+	"os"
+	"time"
 
 	"fmt"
 	//"encoding/json"
@@ -16,6 +17,9 @@ import (
 	"net/http"
 	//"github.com/gorilla/mux"
 	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
+
+	"github.com/dgrijalva/jwt-go"
 
 	/* "google.golang.org/grpc"
 
@@ -31,6 +35,12 @@ import (
 	"github.com/go-openapi/swag" */
 
 )
+
+var mysecret = []byte(os.Getenv("POC_JWT_SECRET"))
+
+var IsLoggedIn = middleware.JWTWithConfig(middleware.JWTConfig{
+    SigningKey: mysecret,
+})
 
 // GetTokenRequest represents body of get_token request.
 type GetTokenRequest struct {
@@ -48,7 +58,6 @@ type GetTokenResponse struct {
 // GetByProcessRunDateIdRequest represents body of get_by_process_run_date_id request.
 type GetByProcessRunDateIdRequest struct {
 	ProcessRunDateID int `json:"processrundateid"`
-	Token string `json:"token"`
 }
 
 // swagger:model GetByProcessRunDateIdResponse
@@ -62,7 +71,6 @@ type GetByProcessRunDateIdResponse struct {
 type GetBetweenProcessRunDateIdsRequest struct {
 	FromProcessRunDateID int `json:"fromprocessrundateid" query:"fromprocessrundateid"`
 	ToProcessRunDateID int `json:"toprocessrundateid" query:"toprocessrundateid"`
-	Token string `json:"token" query:"token"`
 }
 
 type GetBetweenProcessRunDateIds struct {
@@ -74,6 +82,24 @@ type GetBetweenProcessRunDateIds struct {
 // GetBetweenProcessRunDateIdsResponse represents body of get_between_process_run_date_ids response.
 type GetBetweenProcessRunDateIdsResponse []GetBetweenProcessRunDateIds
 
+func UseSubroute(group *echo.Group) {
+	group.GET("/count_by_process_run_date_id/:processrundateid", GetByProcessRunDateIdHandler, IsLoggedIn)
+	group.GET("/counts_between_process_run_date_ids/:fromprocessrundateid/:toprocessrundateid", GetBetweenProcessRunDateIdsHandler, IsLoggedIn)
+}
+
+// restricted handles jwt token validation
+func Restricted(ctx echo.Context) error {
+	if temp := ctx.Get("user"); temp != nil {
+		user := temp.(*jwt.Token)
+		claims := user.Claims.(jwt.MapClaims)
+		name := claims["name"].(string)
+		fmt.Printf("name = %s", name)
+		//return ctx.String(http.StatusOK, "Welcome "+name+"! \n")
+		return nil
+		
+	}
+	return echo.ErrUnauthorized
+}
 
 // GetTokenHandler handles incoming get_token requests
 func GetTokenHandler(ctx echo.Context) error {
@@ -81,23 +107,36 @@ func GetTokenHandler(ctx echo.Context) error {
 	userid := vars["userid"]
 	password := vars["password"] */
 
-	req := GetTokenRequest{}/*  */
-
-	if err := ctx.Bind(&req); err != nil {
-		return echo.ErrBadRequest
-	}
     /* hostip := req.HostIP
 	userid := req.UserId	
 	password := req.Passwd */
 
 	
-	hostip := ctx.Param("hostip")
+	//hostip := ctx.Param("hostip")
 	userid := ctx.Param("userid")
-	password := ctx.Param("passwd")
+	//password := ctx.Param("passwd")
 
-	// Perform check 
+	// Perform check in AD if userID exists
 
-	resp := hostip + " sent by " + userid +" = " + password
+	token := jwt.New(jwt.SigningMethodHS512)
+	claims := token.Claims.(jwt.MapClaims)
+
+	claims["authorized"] = true
+	//claims["hostip"] = hostip
+	claims["name"] = userid
+	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
+
+	tokenString, err := token.SignedString(mysecret)
+
+	if err != nil {
+		fmt.Errorf("Something went wrong generating the token : %s", err.Error())
+		return err
+	}
+
+	resp := GetTokenResponse{Token: tokenString}
+
+	//resp := tokenString
+	//resp := "host= " + hostip + " for user = " + userid
 	//fmt.Fprintf(w, "Token generated testtoken for user - %v with password - %v", userid, password)
 
 	return ctx.JSON(http.StatusOK, resp)
@@ -107,6 +146,10 @@ func GetByProcessRunDateIdHandler(ctx echo.Context) error {
 	/* vars := mux.Vars(r)
 	processrundateID := vars["PROCESS_RUN_DATE_ID"]
 	tokenID, ok := vars["token"] */
+
+	restricted := Restricted(ctx)
+
+	fmt.Printf("restricted = %v\n", restricted)
 
 	req := GetByProcessRunDateIdRequest{}
 	
@@ -129,20 +172,20 @@ func GetByProcessRunDateIdHandler(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, err)
 	}
 
-	token := ctx.Param("token")
+	//token := ctx.Param("token")
 
 	if err := ctx.Bind(&req); err != nil {
 		return echo.ErrBadRequest
 	}
 
-	fmt.Printf("token = %v\n", token)
+	//fmt.Printf("token = %v\n", token)
 	
-	//if !ok {
+	/* //if !ok {
 	if token == "" {	
 		//fmt.Fprintf(w, "Invalid Token. Please generate a token")
 		resp := "Invalid Token. Please generate a token"
 		return ctx.JSON(http.StatusUnauthorized, resp)
-	}
+	} */
 
 	//fmt.Fprintf(w, "Get Process Run Date ID: %v with token %v", processrundateID, tokenID)
 
@@ -171,6 +214,10 @@ func GetBetweenProcessRunDateIdsHandler(w http.ResponseWriter, r *http.Request) 
 
 func GetBetweenProcessRunDateIdsHandler(ctx echo.Context) error {
 	
+	restricted := Restricted(ctx)
+
+	fmt.Printf("restricted = %v\n", restricted)
+
 	req := GetBetweenProcessRunDateIdsRequest{}
 	
 	/* params := ctx.QueryParam("params")
@@ -200,18 +247,18 @@ func GetBetweenProcessRunDateIdsHandler(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, err)
 	}
 
-	token := ctx.Param("token")
+	//token := ctx.Param("token")
 
 	if err := ctx.Bind(&req); err != nil {
 		return echo.ErrBadRequest
 	}
 
-	fmt.Printf("token = %v\n", token)
+	/* fmt.Printf("token = %v\n", token)
 
 	if token == "" {	
 		resp := "Invalid Token. Please generate a token"
 		return ctx.JSON(http.StatusUnauthorized, resp)
-	}
+	} */
 
 	//resp := "From : " + strconv.Itoa(fromprocessrundateID) + " To : " + strconv.Itoa(toprocessrundateID)  +" requested using token ->" + token
 
