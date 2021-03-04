@@ -118,7 +118,7 @@ func GetTokenHandler(ctx echo.Context) error {
 
 	// Perform check in AD if userID exists
 
-	token := jwt.New(jwt.SigningMethodHS512)
+	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 
 	claims["authorized"] = true
