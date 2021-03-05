@@ -4,7 +4,7 @@ import (
 	"os"
 	"log"
 	//"fmt"
-	//"net/http"
+	"net/http"
 	"github.com/joho/godotenv"
 
 	"github.com/labstack/echo"
@@ -43,12 +43,13 @@ func getEnvVariable(key string) string {
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	e.Use(middleware.CORS())
+	//e.Use(middleware.CORS())
 
-	/* e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"http://localhost:3002", "http://10.175.166.9:3002"},
-		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
-	  })) */
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
+		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
+	  }))
 
 	// Set up basic auth with username=foo and password=bar
 	/* e.Use(middleware.BasicAuthWithConfig(middleware.BasicAuthConfig{
