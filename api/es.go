@@ -224,5 +224,118 @@ func GetBetweenProcessRunDateIds_search_request(fromprocessrundateid int, toproc
 	log.Println(strings.Repeat("=", 37))
 
 	return &resp
+}
 
+func GetAllProcessRunDateIds_search_request() *GetBetweenProcessRunDateIdsResponse {
+
+	resp := GetBetweenProcessRunDateIdsResponse{}
+	es,_ := es_connect()
+
+	var compositeSize = 1000
+
+	field := "PROCESS_RUN_DATE_ID"
+
+	 // Build the request body.
+	 var buf bytes.Buffer
+
+	 // This query didn't work when there are multiple sources in it since it is an array of sources in ES. Unable to pass the array of sources
+/*  		query := map[string]interface{}{
+			"size": 0,
+			"aggs": map[string]interface{}{
+				"ALL_PROCESS_RUN_DATE_ID": map[string]interface{}{
+					"composite": map[string]interface{}{
+						"size": compositeSize,
+						"sources": map[string]interface{}{
+							field: map[string]interface{}{
+								"terms": map[string]interface{}{
+									"field": field,
+									},
+								},
+							"count": map[string]interface{}{
+									"terms": map[string]interface{}{
+										"field": "count",
+										},
+									},
+					},
+				},
+			},
+		},
+	} */
+	// This query works as the second source is moved to aggs
+	query := map[string]interface{}{
+		"size": 0,
+		"aggs": map[string]interface{}{
+			"ALL_PROCESS_RUN_DATE_ID": map[string]interface{}{
+				"composite": map[string]interface{}{
+					"size": compositeSize,
+					"sources": map[string]interface{}{
+						field: map[string]interface{}{
+							"terms": map[string]interface{}{
+								"field": field,
+								},
+							},
+				},
+			},
+			"aggs": map[string]interface{}{
+				"count": map[string]interface{}{ 
+					"max": map[string]interface{}{ 
+						"field": "count", 
+						}, 
+					},
+			  },	
+		},
+	},
+}
+
+	 if err := json.NewEncoder(&buf).Encode(query); err != nil {
+		log.Fatalf("Error encoding query: %s", err)
+	  }
+	
+	// Perform the search request.
+	res, err := es.Search(
+		es.Search.WithContext(context.Background()),
+		es.Search.WithIndex("banknotes_aggregate-*"),
+		es.Search.WithBody(&buf),
+		es.Search.WithPretty(),
+	  )
+	  if err != nil {
+		log.Fatalf("Error getting response: %s", err)
+	  }
+	  defer res.Body.Close()
+
+	  if res.IsError() {
+		var e map[string]interface{}
+		if err := json.NewDecoder(res.Body).Decode(&e); err != nil {
+		  log.Fatalf("Error parsing the response body: %s", err)
+		} else {
+		  // Print the response status and error information.
+		  log.Fatalf("[%s] %s: %s",
+			res.Status(),
+			e["error"].(map[string]interface{})["type"],
+			e["error"].(map[string]interface{})["reason"],
+		  )
+		}
+	  }
+
+	  if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
+		log.Fatalf("Error parsing the response body: %s", err)
+	  }
+	  // Print the response status, number of results, and request duration.
+	  log.Printf(
+		"[%s] %d hits; took: %dms",
+		res.Status(),
+		int(r["hits"].(map[string]interface{})["total"].(map[string]interface{})["value"].(float64)),
+		int(r["took"].(float64)),
+	  )
+
+
+	for _, agg := range r["aggregations"].(map[string]interface{})["ALL_PROCESS_RUN_DATE_ID"].(map[string]interface{})["buckets"].([]interface{}){
+		log.Printf(" PROCESS_RUN_DATE_ID=%d, count=%d", int(agg.(map[string]interface{})["key"].(map[string]interface{})["PROCESS_RUN_DATE_ID"].(float64)), int(agg.(map[string]interface{})["count"].(map[string]interface{})["value"].(float64)))
+		//log.Printf(" PROCESS_RUN_DATE_ID=%d, count=%d", int(agg.(map[string]interface{})["key"].(map[string]interface{})["PROCESS_RUN_DATE_ID"].(float64)))
+		resp = append(resp, GetBetweenProcessRunDateIds{int(agg.(map[string]interface{})["key"].(map[string]interface{})["PROCESS_RUN_DATE_ID"].(float64)), int(agg.(map[string]interface{})["count"].(map[string]interface{})["value"].(float64))})
+	}
+
+	log.Println(strings.Repeat("=", 37))
+
+	return &resp
 }
