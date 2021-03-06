@@ -8,7 +8,7 @@ import (
 	
 	
 	"strings" */
-	"os"
+	//"os"
 	"time"
 
 	"fmt"
@@ -17,7 +17,7 @@ import (
 	"net/http"
 	//"github.com/gorilla/mux"
 	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
+	//"github.com/labstack/echo/middleware"
 
 	"github.com/dgrijalva/jwt-go"
 
@@ -35,52 +35,6 @@ import (
 	"github.com/go-openapi/swag" */
 
 )
-
-var mysecret = []byte(os.Getenv("POC_JWT_SECRET"))
-
-var IsLoggedIn = middleware.JWTWithConfig(middleware.JWTConfig{
-    SigningKey: mysecret,
-})
-
-// GetTokenRequest represents body of get_token request.
-type GetTokenRequest struct {
-	HostIP string `json:"hostip"`
-	UserId string `json:"userid"`
-	Passwd string `json:"passwd"`
-}
-
-// swagger:model GetTokenResponse
-// GetTokenResponse represents body of get_token response.
-type GetTokenResponse struct {
-	Token string `json:"token"`
-}
-
-// GetByProcessRunDateIdRequest represents body of get_by_process_run_date_id request.
-type GetByProcessRunDateIdRequest struct {
-	ProcessRunDateID int `json:"processrundateid"`
-}
-
-// swagger:model GetByProcessRunDateIdResponse
-// GetByProcessRunDateIdResponse represents body of get_by_process_run_date_id response.
-type GetByProcessRunDateIdResponse struct {
-	ProcessRunDateID int `json:"processrundateid"`
-	Count int `json:"count"`
-}
-
-// GetBetweenProcessRunDateIdsRequest represents body of get_between_process_run_date_ids request.
-type GetBetweenProcessRunDateIdsRequest struct {
-	FromProcessRunDateID int `json:"fromprocessrundateid" query:"fromprocessrundateid"`
-	ToProcessRunDateID int `json:"toprocessrundateid" query:"toprocessrundateid"`
-}
-
-type GetBetweenProcessRunDateIds struct {
-			ProcessRunDateID int `json:"processrundateid"`
-			Count int `json:"count"`
-}
-
-// swagger:model GetBetweenProcessRunDateIdsResponse
-// GetBetweenProcessRunDateIdsResponse represents body of get_between_process_run_date_ids response.
-type GetBetweenProcessRunDateIdsResponse []GetBetweenProcessRunDateIds
 
 func UseSubroute(group *echo.Group) {
 	group.GET("/count_by_process_run_date_id/:processrundateid", GetByProcessRunDateIdHandler, IsLoggedIn)
@@ -143,6 +97,7 @@ func GetTokenHandler(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, resp)
 
 }
+
 func GetByProcessRunDateIdHandler(ctx echo.Context) error {
 	/* vars := mux.Vars(r)
 	processrundateID := vars["PROCESS_RUN_DATE_ID"]
