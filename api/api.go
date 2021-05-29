@@ -37,9 +37,14 @@ import (
 )
 
 func UseSubroute(group *echo.Group) {
-	group.GET("/count_by_process_run_date_id/:processrundateid", GetByProcessRunDateIdHandler, IsLoggedIn)
-	group.GET("/counts_between_process_run_date_ids/:fromprocessrundateid/:toprocessrundateid", GetBetweenProcessRunDateIdsHandler, IsLoggedIn)
-	group.GET("/counts_of_all_process_run_date_ids", GetAllProcessRunDateIdsHandler, IsLoggedIn)
+	// group.GET("/count_by_process_run_date_id/:processrundateid", GetByProcessRunDateIdHandler, IsLoggedIn)
+	// group.GET("/counts_between_process_run_date_ids/:fromprocessrundateid/:toprocessrundateid", GetBetweenProcessRunDateIdsHandler, IsLoggedIn)
+	// group.GET("/counts_of_all_process_run_date_ids", GetAllProcessRunDateIdsHandler, IsLoggedIn)
+	group.GET("/count_by_process_run_date_id/:processrundateid", GetByProcessRunDateIdHandler)
+	group.GET("/counts_between_process_run_date_ids/:fromprocessrundateid/:toprocessrundateid", GetBetweenProcessRunDateIdsHandler)
+	group.GET("/counts_of_all_process_run_date_ids", GetAllProcessRunDateIdsHandler)
+	group.GET("/notes_validity_details", GetNotesValidityDetailsHandler)
+	group.GET("/notes_invalidity_details", GetNotesInValidityDetailsHandler)
 }
 
 // restricted handles jwt token validation
@@ -79,7 +84,8 @@ func GetTokenHandler(ctx echo.Context) error {
 	claims["authorized"] = true
 	//claims["hostip"] = hostip
 	claims["name"] = userid
-	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
+	// claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
+	claims["exp"] = time.Now().Add(time.Minute * 90000).Unix()
 
 	tokenString, err := token.SignedString(mysecret)
 
@@ -229,7 +235,31 @@ func GetAllProcessRunDateIdsHandler(ctx echo.Context) error {
 
 	fmt.Printf("restricted = %v\n", restricted)
 
+	//Uncomment pg_coonect() to connect to postgresql
+	//pg_connect()
+	/* tmpresp, err := env.GetDetailsOfProcessRunDateId_request(20170907)
+
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("+%v\n", tmpresp) */
+
 	resp := GetAllProcessRunDateIds_search_request()
+
+	return ctx.JSON(http.StatusOK, resp)
+}
+
+func GetNotesValidityDetailsHandler(ctx echo.Context) error {
+
+	resp := GetNotesValidityDetails_search_request() 
+
+	return ctx.JSON(http.StatusOK, resp)
+}
+
+func GetNotesInValidityDetailsHandler(ctx echo.Context) error {
+
+	resp := GetNotesInValidityDetails_search_request() 
 
 	return ctx.JSON(http.StatusOK, resp)
 }

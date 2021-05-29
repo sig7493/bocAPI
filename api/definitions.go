@@ -50,3 +50,45 @@ type GetBetweenProcessRunDateIds struct {
 // swagger:model GetBetweenProcessRunDateIdsResponse
 // GetBetweenProcessRunDateIdsResponse represents body of get_between_process_run_date_ids response.
 type GetBetweenProcessRunDateIdsResponse []GetBetweenProcessRunDateIds
+
+type GetDetailsOfProcessRunDateId struct {
+	Process_Run_Date_ID int `json:"process_run_date_id"`
+	Masked_Serial_Num string `json:"masked_serial_num"`
+	Bps_Shift_ID int `json:"bps_shift_id"`
+	Machine_ID int `json:"machine_id"`
+	Print_Batch_ID int `json:"print_batch_id"`
+	Rdp_ID int `json:"rdp_id"`
+	Bn_Status_ID int `json:"bn_status_id"`
+	Output_Stacker_ID int `json:"output_stacker_id"`
+	Circ_Trial_ID int `json:"circ_trial_id"`
+	Bps_Shift_Nb int `json:"bps_shift_nb"`
+	Deposit_Nb int `json:"deposit_nb"`
+	Row_Counter_NB int `json:"row_counter_nb"`
+	Load_ID int `json:"load_id"`
+}
+
+// swagger:model GetDetailsOfProcessRunDateIdResponse
+// GetDetailsOfProcessRunDateIdResponse represents body of get_details_of_process_run_date_id response.
+type GetDetailsOfProcessRunDateIdResponse []GetDetailsOfProcessRunDateId
+
+type GetNotesValidityDetails struct {
+	Denomination string `json:"denomination"`
+	Image_path string `json:"image_path"`
+	Rgb_color string `json:"rgb_color"`
+	Rgb_val string `json:"rgb_val"`
+	Serial_number string `json:"serial_number"`
+	Process_Run_Date_ID int `json:"process_run_date_id"`
+	Bps_Shift_ID int `json:"bps_shift_id"`
+	Machine_ID int `json:"machine_id"`
+	Print_Batch_ID int `json:"print_batch_id"`
+	Rdp_ID int `json:"rdp_id"`
+	Bn_Status_ID int `json:"bn_status_id"`
+	Output_Stacker_ID int `json:"output_stacker_id"`
+	Circ_Trial_ID int `json:"circ_trial_id"`
+	Bps_Shift_Nb int `json:"bps_shift_nb"`
+	Deposit_Nb int `json:"deposit_nb"`
+	Row_Counter_NB int `json:"row_counter_nb"`
+	Load_ID int `json:"load_id"`
+}
+
+type GetNotesValidityDetailsResponse []GetNotesValidityDetails
