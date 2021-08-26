@@ -45,6 +45,8 @@ func UseSubroute(group *echo.Group) {
 	group.GET("/counts_of_all_process_run_date_ids", GetAllProcessRunDateIdsHandler)
 	group.GET("/notes_validity_details", GetNotesValidityDetailsHandler)
 	group.GET("/notes_invalidity_details", GetNotesInValidityDetailsHandler)
+	group.GET("/notes_destruction_aggregate", GetNotesDestructionAggHandler)
+	group.GET("/notes_destruction_details/:printbatchid/:year/:qtr/:month/:denom/:from/:scrollid/", GetNotesDestructionDetailsHandler)
 }
 
 // restricted handles jwt token validation
@@ -262,4 +264,84 @@ func GetNotesInValidityDetailsHandler(ctx echo.Context) error {
 	resp := GetNotesInValidityDetails_search_request() 
 
 	return ctx.JSON(http.StatusOK, resp)
+}
+func GetNotesDestructionAggHandler(ctx echo.Context) error {
+
+	resp := GetNotesDestructionAgg_search_request()
+
+	return ctx.JSON(http.StatusOK, resp)
+}
+
+func GetNotesDestructionDetailsHandler(ctx echo.Context) error {
+
+	req := GetNotesDestructionDetailsRequest{}
+
+	printbatchid := ctx.Param("printbatchid")
+	if (len(printbatchid) == 0) {
+		err := "Missing printbatchid"
+		fmt.Printf("%v", err)
+		return ctx.JSON(http.StatusBadRequest, err)
+	}
+
+	year, err := strconv.Atoi(ctx.Param("year"))
+	if err != nil {
+		fmt.Printf("%v", err)
+		return ctx.JSON(http.StatusBadRequest, err)
+	}
+
+	qtr := ctx.Param("qtr")
+	if len(qtr) == 0 {
+		err := "Missing qtr"
+		fmt.Printf("%v", err)
+		return ctx.JSON(http.StatusBadRequest, err)
+	}
+
+	month := ctx.Param("month")
+	if len(month) == 0 {
+		err := "Missing month"
+		fmt.Printf("%v", err)
+		return ctx.JSON(http.StatusBadRequest, err)
+	}
+
+	denom := ctx.Param("denom")
+	if len(denom) == 0 {
+		err := "Missing denom"
+		fmt.Printf("%v", err)
+		return ctx.JSON(http.StatusBadRequest, err)
+	}
+
+	from_val, err := strconv.Atoi(ctx.Param("from"))
+	if err != nil {
+		fmt.Printf("%v", err)
+		return ctx.JSON(http.StatusBadRequest, err)
+	}
+
+	scroll_id := ctx.Param("scrollid")
+	if len(scroll_id) == 0{
+		scroll_id = "None"
+	}
+
+	/* from, err := strconv.Atoi(ctx.Param("from"))
+	if err != nil {
+		fmt.Printf("%v", err)
+		return ctx.JSON(http.StatusBadRequest, err)
+	}
+
+	size, err := strconv.Atoi(ctx.Param("size"))
+	if err != nil {
+		fmt.Printf("%v", err)
+		return ctx.JSON(http.StatusBadRequest, err)
+	} */
+
+	if err := ctx.Bind(&req); err != nil {
+		return echo.ErrBadRequest
+	}
+
+	resp := GetNotesDestructionDetails_search_request(printbatchid, year, qtr, month, denom, from_val, scroll_id)
+	//resp := GetNotesDestructionDetails_search_request(printbatchid, year, qtr, month, denom)
+
+	//resp := "All Good...maybe"
+
+	return ctx.JSON(http.StatusOK, resp)
+
 }

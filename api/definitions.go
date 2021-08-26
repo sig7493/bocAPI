@@ -92,3 +92,39 @@ type GetNotesValidityDetails struct {
 }
 
 type GetNotesValidityDetailsResponse []GetNotesValidityDetails
+
+// GetNotesDestructionDetailsRequest represents body of get_notes_destruction_details request.
+type GetNotesDestructionDetailsRequest struct {
+	Printbatchid string `json:"printbatchid" query:"printbatchid"`
+	Year int `json:"year" query:"year"`
+	Qtr string `json:"qtr" query:"qtr"`
+	Month string `json:"month" query:"month"`
+	Denom string `json:"denom" query:"denom"`
+}
+
+type GetNotesDestructionDetails struct {
+	Scrollid string `json:"scrollid"`
+	//DestructionDetails string `json:"destructiondetails"`
+	Print_Batch_ID string `json:"print_batch_id"`
+	Bn_denom_en_nm string `json:"bn_denom_en_nm"`
+	T_exceed_string_txt string `json:"t_exceed_string_txt"`
+	Year_nb int `json:"year_nb"`
+	Quarter_en_nm string `json:"quarter_en_nm"`
+	Month_en_nm string `json:"month_en_nm"`
+	Row_counter_nb int `json:"row_counter_nb"`
+}
+
+type GetNotesDestructionDetailsResponse []GetNotesDestructionDetails
+
+type GetNotesDestructionAgg struct {
+	Print_Batch_ID string `json:"print_batch_id"`
+	Bn_denom_en_nm string `json:"bn_denom_en_nm"`
+	T_exceed_string_txt string `json:"t_exceed_string_txt"`
+	Year_nb int `json:"year_nb"`
+	Quarter_en_nm string `json:"quarter_en_nm"`
+	Month_en_nm string `json:"month_en_nm"`
+	Sum_row_counter_nb int `json:"sum_row_counter_nb"`
+	Rank int `json:"rank"`
+}
+
+type GetNotesDestructionAggResponse []GetNotesDestructionAgg
