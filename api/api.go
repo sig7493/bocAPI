@@ -1,9 +1,10 @@
 package api
 
 import (
-/* 	"bytes"
-	"context"
-	"log"
+	 "bytes"
+	 //"fmt"
+/*	"context"
+	
 	"net/url"
 	
 	
@@ -12,7 +13,7 @@ import (
 	"time"
 
 	"fmt"
-	//"encoding/json"
+	"encoding/json"
 	"strconv"
 	"net/http"
 	//"github.com/gorilla/mux"
@@ -34,7 +35,15 @@ import (
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag" */
 
+/* 	"golang.org/x/text/language"
+	"golang.org/x/text/language/display"
+	"golang.org/x/text/message" */
+
+	"github.com/allegro/bigcache/v3"
+
 )
+
+var cache, _ = bigcache.NewBigCache(bigcache.DefaultConfig(10 * time.Minute))
 
 func UseSubroute(group *echo.Group) {
 	// group.GET("/count_by_process_run_date_id/:processrundateid", GetByProcessRunDateIdHandler, IsLoggedIn)
@@ -47,6 +56,9 @@ func UseSubroute(group *echo.Group) {
 	group.GET("/notes_invalidity_details", GetNotesInValidityDetailsHandler)
 	group.GET("/notes_destruction_aggregate", GetNotesDestructionAggHandler)
 	group.GET("/notes_destruction_details/:printbatchid/:year/:qtr/:month/:denom/:from/:scrollid/", GetNotesDestructionDetailsHandler)
+	group.GET("/notes_destruction_details/*", GetNotesDestructionDetailsHandler)
+	group.GET("/velocity", GetVelocityDataHandler)
+	group.GET("/velocity_agg_wear_category", GetVelocityAggWearCategoryDataHandler)
 }
 
 // restricted handles jwt token validation
@@ -247,7 +259,28 @@ func GetAllProcessRunDateIdsHandler(ctx echo.Context) error {
 
 	fmt.Printf("+%v\n", tmpresp) */
 
-	resp := GetAllProcessRunDateIds_search_request()
+	resp := GetBetweenProcessRunDateIdsResponse{}
+	var buf bytes.Buffer
+
+	cache_resp, cache_err := cache.Get("all-process-run-date-ids-key")
+
+	if cache_err == nil {
+		fmt.Println("Fetching Cached Response...")
+		fmt.Println(string(cache_resp))
+
+		if err := json.NewDecoder(bytes.NewBuffer(cache_resp)).Decode(&resp); err != nil {
+			fmt.Printf("Error encoding query: %s", err)
+		  }
+	} else {
+		fmt.Println("Fetching from ElasticSearch...")
+		resp = *GetAllProcessRunDateIds_search_request()
+
+		if err := json.NewEncoder(&buf).Encode(resp); err != nil {
+			fmt.Printf("Error encoding query: %s", err)
+		  }
+
+		cache.Set("all-process-run-date-ids-key", []byte(buf.Bytes()))
+	}
 
 	return ctx.JSON(http.StatusOK, resp)
 }
@@ -267,7 +300,28 @@ func GetNotesInValidityDetailsHandler(ctx echo.Context) error {
 }
 func GetNotesDestructionAggHandler(ctx echo.Context) error {
 
-	resp := GetNotesDestructionAgg_search_request()
+	resp := GetNotesDestructionAggResponse{}
+	var buf bytes.Buffer
+
+	cache_resp, cache_err := cache.Get("notes-destruction-agg-key")
+
+	if cache_err == nil {
+		fmt.Println("Fetching Cached Response...")
+		fmt.Println(string(cache_resp))
+
+		if err := json.NewDecoder(bytes.NewBuffer(cache_resp)).Decode(&resp); err != nil {
+			fmt.Printf("Error encoding query: %s", err)
+		  }
+	} else {
+		fmt.Println("Fetching from ElasticSearch...")
+		resp = *GetNotesDestructionAgg_search_request()
+
+		if err := json.NewEncoder(&buf).Encode(resp); err != nil {
+			fmt.Printf("Error encoding query: %s", err)
+		  }
+
+		cache.Set("notes-destruction-agg-key", []byte(buf.Bytes()))
+	}
 
 	return ctx.JSON(http.StatusOK, resp)
 }
@@ -280,40 +334,46 @@ func GetNotesDestructionDetailsHandler(ctx echo.Context) error {
 	if (len(printbatchid) == 0) {
 		err := "Missing printbatchid"
 		fmt.Printf("%v", err)
-		return ctx.JSON(http.StatusBadRequest, err)
+		//return ctx.JSON(http.StatusBadRequest, err)
+		printbatchid = ""
 	}
 
 	year, err := strconv.Atoi(ctx.Param("year"))
 	if err != nil {
 		fmt.Printf("%v", err)
-		return ctx.JSON(http.StatusBadRequest, err)
+		//return ctx.JSON(http.StatusBadRequest, err)
+		year = time.Now().Year()
 	}
 
 	qtr := ctx.Param("qtr")
 	if len(qtr) == 0 {
 		err := "Missing qtr"
 		fmt.Printf("%v", err)
-		return ctx.JSON(http.StatusBadRequest, err)
+		//return ctx.JSON(http.StatusBadRequest, err)
+		qtr = "*"
 	}
 
 	month := ctx.Param("month")
 	if len(month) == 0 {
 		err := "Missing month"
 		fmt.Printf("%v", err)
-		return ctx.JSON(http.StatusBadRequest, err)
+		//return ctx.JSON(http.StatusBadRequest, err)
+		month = "*"
 	}
 
 	denom := ctx.Param("denom")
 	if len(denom) == 0 {
 		err := "Missing denom"
 		fmt.Printf("%v", err)
-		return ctx.JSON(http.StatusBadRequest, err)
+		//return ctx.JSON(http.StatusBadRequest, err)
+		denom = "*"
 	}
 
 	from_val, err := strconv.Atoi(ctx.Param("from"))
 	if err != nil {
 		fmt.Printf("%v", err)
-		return ctx.JSON(http.StatusBadRequest, err)
+		//return ctx.JSON(http.StatusBadRequest, err)
+		from_val = 0
 	}
 
 	scroll_id := ctx.Param("scrollid")
@@ -345,3 +405,100 @@ func GetNotesDestructionDetailsHandler(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, resp)
 
 }
+
+func GetVelocityDataHandler(ctx echo.Context) error {
+
+	//opts := VelocityOpts{}
+
+	//velocitydata := GetVelocityDataRequest{}
+	
+	dn := ctx.QueryParam("dn")
+	if dn == "" {
+		dn = "*"
+	}
+
+	sr := ctx.QueryParam("srs")
+	if sr == "" {
+		sr = "*"
+	}
+	
+	day := ctx.QueryParam("day")
+	if day == "" {
+		day = "*"
+	}
+	
+	wk := ctx.QueryParam("wk")
+	if wk == "" {
+		wk = "*"
+	}
+
+	mn := ctx.QueryParam("mn")
+	if mn == "" {
+		mn = "*"
+	}
+
+	yr := ctx.QueryParam("yr")
+	if yr == "" {
+		yr = "*"
+	}
+
+	startdate := ctx.QueryParam("sd")
+	if startdate == "" {
+		startdate = "1970-01-01"
+	}
+	
+	enddate := ctx.QueryParam("ed")
+	if enddate == "" {
+		enddate = "2122-12-31"
+	}
+
+	// fittype := ctx.QueryParam("ft")
+	// if fittype == "*" {
+	// 	fittype = "*"
+	// }
+
+	sn := ctx.QueryParam("sn")
+	if sn == "" {
+		sn = "*"
+	}
+
+	stacker := ctx.QueryParam("sk")
+	if stacker == "" {
+		stacker = "*"
+	}
+
+	from := ctx.QueryParam("from")
+	if from == "" {
+		from = "0"
+	}
+
+	scroll_id := ctx.QueryParam("sid")
+	if scroll_id == "" {
+		scroll_id = "None"
+	}
+	fmt.Println(dn, sr, day, wk, mn, yr, startdate, enddate, sn, stacker)
+
+	resp := GetVelocityData_Search_Request(sr, dn, stacker, sn, day, wk, mn, yr, startdate, enddate, from, scroll_id)
+
+	// return nil
+	return ctx.JSON(http.StatusOK, resp)
+	
+}
+
+
+func GetVelocityAggWearCategoryDataHandler(ctx echo.Context) error {
+
+	resp := GetVelocityAggWearCategoryData_Search_Request()
+
+	return ctx.JSON(http.StatusOK, resp)
+}
+
+/* func TranslateHandler(ctx echo.Context) error {
+
+	// define a direct translation from English to French
+	message.SetString(language.French, "In %v people speak %v.", "In %v spreekt men %v.")
+
+
+
+} */
+

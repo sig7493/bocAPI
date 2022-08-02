@@ -2,8 +2,8 @@ package main
 
 import (
 	"os"
-	"log"
-	//"fmt"
+	//"log"
+	"fmt"
 	"net/http"
 	"github.com/joho/godotenv"
 
@@ -25,7 +25,7 @@ func getEnvVariable(key string) string {
 	err := godotenv.Load(".env")
   
 	if err != nil {
-	  log.Fatalf("Error loading .env file")
+	  fmt.Printf("Error loading .env file")
 	}
   
 	return os.Getenv(key)
@@ -41,12 +41,12 @@ func getEnvVariable(key string) string {
 	// Echo instance
 	e := echo.New()
 
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
+	////e.Use(middleware.Logger())
+	////e.Use(middleware.Recover())
 	//e.Use(middleware.CORS())
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://localhost:3002", "http://10.175.166.9:3002"},
+		AllowOrigins: []string{"http://localhost:3002", "http://10.175.166.9:3002", "http://10.175.166.18:8888", "http://10.175.166.10:8000", "10.175.166.16"},
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
 		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
 	  }))
@@ -68,7 +68,7 @@ func getEnvVariable(key string) string {
 //	router.HandleFunc("/get_by_process_run_date_id/{token}/{PROCESS_RUN_DATE_ID}", api.GetByProcessRunDateIdHandler).Methods("GET")
 //	router.HandleFunc("/get_between_process_run_date_id/{token}/{START_PROCESS_RUN_DATE_ID}/{END_PROCESS_RUN_DATE_ID}", api.GetBetweenProcessRunDateIdsHandler).Methods("GET")
 
-	log.Fatal(http.ListenAndServe(apihost + ":" + apiport, router)) */
+	fmt.Fatal(http.ListenAndServe(apihost + ":" + apiport, router)) */
 
 	// Route => handler
 	e.GET("/generate_token/:hostip/:userid/:passwd", api.GetTokenHandler)

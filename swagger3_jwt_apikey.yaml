@@ -4,8 +4,8 @@ info:
   description: Documentation of bocapi API.
   version: 1.0.0
 servers:
-- url: http://localhost:3000/
-- url: https://localhost:3000/
+- url: http://10.175.166.9:3000/
+- url: https://10.175.166.9:3000/
 paths:
   /api/counts_of_all_process_run_date_ids:
     get:
@@ -115,6 +115,21 @@ paths:
         404:
           description: Token not generated.
           content: {}
+  /api/velocity_agg_wear_category:
+    get:
+      tags: 
+      - velocity_agg_wear_category
+      summary: Get aggregate by wear Wear categories
+      operationId: idofvelocity_agg_wear_category
+      responses:
+        200:
+          description: GetVelocityAggWearCategoryResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetVelocityAggWearCategoryResponse'
+      security:
+      - Bearer: []
 components:
   schemas:
     GetBetweenProcessRunDateIds:
@@ -191,6 +206,301 @@ components:
           type: string
           x-go-name: Token
       x-go-package: github.com/sig7493/bocAPI/api
+    GetVelocityAggWearCategoryResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          x-go-name: Total
+        payload:
+          type: array
+          items:  
+            type: object
+            properties:
+              year:
+                type: integer
+                maximum: 1970
+              qtr:
+                type: integer
+                minimum: 1
+                maximum: 1
+              denom:
+                type: integer
+                maximum: 5
+              fld_notes_with_zero_count:
+                type: number
+              fld_average_excluding_zero:
+                type: number
+              fld_non_zero_pct:
+                type: number
+              fld_gt_eq_threshold_pct:
+                type: number
+              fld_average_reading:
+                type: number
+              fed_notes_with_zero_count:
+                type: number
+              fed_average_excluding_zero:
+                type: number
+              fed_non_zero_pct:
+                type: number
+              fed_gt_eq_threshold_pct:
+                type: number
+              fed_average_reading:
+                type: number
+              crs_notes_with_zero_count:
+                type: number
+              crs_excluding_zero_mean:
+                type: number
+              crs_non_zero_pct:
+                type: number
+              crs_gt_eq_threshold_pct:
+                type: number
+              crs_average_reading:
+                type: number
+              hl_notes_with_zero_count:
+                type: number
+              hl_excluding_zero_mean:
+                type: number
+              hl_non_zero_pct:
+                type: number
+              hl_gt_eq_threshold_pct:
+                type: number
+              hl_average_reading:
+                type: number
+              otr_notes_with_zero_count:
+                type: number
+              otr_excluding_zero_mean:
+                type: number
+              otr_non_zero_pct:
+                type: number
+              otr_gt_eq_threshold_pct:
+                type: number
+              otr_average_reading:
+                type: number
+              motr_notes_with_zero_count:
+                type: number
+              motr_excluding_zero_mean:
+                type: number
+              motr_non_zero_pct:
+                type: number
+              motr_gt_eq_threshold_pct:
+                type: number
+              motr_average_reading:
+                type: number
+              etr_mtr_notes_with_zero_count:
+                type: number
+              etr_mtr_excluding_zero_mean:
+                type: number
+              etr_mtr_non_zero_pct:
+                type: number
+              etr_mtr_gt_eq_threshold_pct:
+                type: number
+              etr_mtr_average_reading:
+                type: number
+              metr_mmtr_notes_with_zero_count:
+                type: number
+              metr_mmtr_excluding_zero_mean:
+                type: number
+              metr_mmtr_non_zero_pct:
+                type: number
+              metr_mmtr_gt_eq_threshold_pct:
+                type: number
+              metr_mmtr_average_reading:
+                type: number
+              crn_notes_with_zero_count:
+                type: number
+              crn_excluding_zero_mean:
+                type: number
+              crn_non_zero_pct:
+                type: number
+              crn_gt_eq_threshold_pct:
+                type: number
+              crn_average_reading:
+                type: number
+              med_notes_with_zero_count:
+                type: number
+              med_excluding_zero_mean:
+                type: number
+              med_non_zero_pct:
+                type: number
+              med_gt_eq_threshold_pct:
+                type: number
+              med_average_reading:
+                type: number
+              tape_notes_with_zero_count:
+                type: number
+              tape_excluding_zero_mean:
+                type: number
+              tape_non_zero_pct:
+                type: number
+              tape_gt_eq_threshold_pct:
+                type: number
+              tape_average_reading:
+                type: number
+              fol_notes_with_zero_count:
+                type: number
+              fol_excluding_zero_mean:
+                type: number
+              fol_non_zero_pct:
+                type: number
+              fol_gt_eq_threshold_pct:
+                type: number
+              fol_average_reading:
+                type: number
+              sfol_notes_with_zero_count:
+                type: number
+              sfol_excluding_zero_mean:
+                type: number
+              sfol_non_zero_pct:
+                type: number
+              sfol_gt_eq_threshold_pct:
+                type: number
+              sfol_average_reading:
+                type: number
+              mfol_notes_with_zero_count:
+                type: number
+              mfol_excluding_zero_mean:
+                type: number
+              mfol_non_zero_pct:
+                type: number
+              mfol_gt_eq_threshold_pct:
+                type: number
+              mfol_average_reading:
+                type: number
+              iwb_notes_with_zero_count:
+                type: number
+              iwb_excluding_zero_mean:
+                type: number
+              iwb_non_zero_pct:
+                type: number
+              iwb_gt_eq_threshold_pct:
+                type: number
+              iwb_average_reading:
+                type: number
+              iwf_notes_with_zero_count:
+                type: number
+              iwf_excluding_zero_mean:
+                type: number
+              iwf_non_zero_pct:
+                type: number
+              iwf_gt_eq_threshold_pct:
+                type: number
+              iwf_average_reading:
+                type: number
+              gtf_notes_with_zero_count:
+                type: number
+              gtf_excluding_zero_mean:
+                type: number
+              gtf_non_zero_pct:
+                type: number
+              gtf_gt_eq_threshold_pct:
+                type: number
+              gtf_average_reading:
+                type: number
+              gtb_notes_with_zero_count:
+                type: number
+              gtb_excluding_zero_mean:
+                type: number
+              gtb_non_zero_pct:
+                type: number
+              gtb_gt_eq_threshold_pct:
+                type: number
+              gtb_average_reading:
+                type: number
+              gcwf_notes_with_zero_count:
+                type: number
+              gcwf_excluding_zero_mean:
+                type: number
+              gcwf_non_zero_pct:
+                type: number
+              gcwf_gt_eq_threshold_pct:
+                type: number
+              gcwf_average_reading:
+                type: number
+              owl_notes_with_zero_count:
+                type: number
+              owl_excluding_zero_mean:
+                type: number
+              owl_non_zero_pct:
+                type: number
+              owl_gt_eq_threshold_pct:
+                type: number
+              owl_average_reading:
+                type: number
+              stnf_notes_with_zero_count:
+                type: number
+              stnf_excluding_zero_mean:
+                type: number
+              stnf_non_zero_pct:
+                type: number
+              stnf_gt_eq_threshold_pct:
+                type: number
+              stnf_average_reading:
+                type: number
+              stnb_notes_with_zero_count:
+                type: number
+              stnb_excluding_zero_mean:
+                type: number
+              stnb_non_zero_pct:
+                type: number
+              stnb_gt_eq_threshold_pct:
+                type: number
+              stnb_average_reading:
+                type: number
+              fmtf_notes_with_zero_count:
+                type: number
+              fmtf_excluding_zero_mean:
+                type: number
+              fmtf_non_zero_pct:
+                type: number
+              fmtf_gt_eq_threshold_pct:
+                type: number
+              fmtf_average_reading:
+                type: number
+              fmtb_notes_with_zero_count:
+                type: number
+              fmtb_excluding_zero_mean:
+                type: number
+              fmtb_non_zero_pct:
+                type: number
+              fmtb_gt_eq_threshold_pct:
+                type: number
+              FMTB_Average_Reading:
+                type: number
+              ffit_notes_with_zero_count:
+                type: number
+              ffit_excluding_zero_mean:
+                type: number
+              ffit_non_zero_pct:
+                type: number
+              ffit_gt_eq_threshold_pct:
+                type: number
+              ffit_average_reading:
+                type: number
+              ovip_notes_with_zero_count:
+                type: number
+              ovip_excluding_zero_mean:
+                type: number
+              ovip_non_zero_pct:
+                type: number
+              ovip_gt_eq_threshold_pct:
+                type: number
+              ovip_average_reading:
+                type: number
+              ovis_notes_with_zero_count:
+                type: number
+              ovis_excluding_zero_mean:
+                type: number
+              ovis_non_zero_pct:
+                type: number
+              ovis_gt_eq_threshold_pct:
+                type: number
+              ovis_average_reading:
+                type: number
+          minItems: 1
+          maxItems: 1
+          x-go-name: Payload
+        x-go-package: github.com/sig7493/bocAPI/api  
   securitySchemes:
     Bearer:
       type: http
